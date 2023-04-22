@@ -1,0 +1,6 @@
+{% extends 'admin/model/create.html' %}
+
+{% block body %}
+    {{ ckeditor.load() }}
+    {{ super() }}
+{% endblock %}

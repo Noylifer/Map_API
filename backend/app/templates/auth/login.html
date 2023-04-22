@@ -1,0 +1,22 @@
+
+{% block scripts %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth/login.css') }}">
+{% endblock %}
+
+{% block app_content %}
+
+    <form class="form" method="POST" action="{{ url_for('auth.login') }}">
+        <div class="form_container">
+
+            <label for="email"></label>
+            <input type="text" name="email" id="email" placeholder="Почта">
+
+            <label for="password"></label>
+            <input type="text" name="password" id="password" placeholder="Пароль">
+
+            <input type="submit" value="Войти">
+        </div>
+
+    </form>
+
+{% endblock %}
