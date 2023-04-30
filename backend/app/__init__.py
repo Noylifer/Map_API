@@ -2,26 +2,37 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 from functools import wraps
-from flask import Flask, session, jsonify
+from flask import Flask, session, jsonify, redirect, url_for
 from flask_json import FlaskJSON
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-# from flask_admin import Admin
+from flask_admin import Admin, AdminIndexView
+from flask_login import LoginManager, current_user
 from config import Config
 from flask_restful import Api
+from flask_ckeditor import CKEditor
 from flask_cors import CORS
-
 db = SQLAlchemy()
 migrate = Migrate()
 json = FlaskJSON()
 api = Api()
-cors = CORS()
-# admin = Admin(name='Админ панель', template_mode='bootstrap4',
-#               url='/admin_panel')
+cors = CORS(allow_headers='*')
+ckeditor = CKEditor()
+
+class MyAdminIndexView(AdminIndexView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('main.login'))
+
+admin = Admin(name='Админ панель', template_mode='bootstrap4',
+              url='/admin', index_view=MyAdminIndexView())
+login = LoginManager()
 
 
 def create_app(config_class=Config):
-    app = Flask(__name__, static_url_path='/static',
+    app = Flask(__name__, static_url_path='/app/static',
                 template_folder='templates',
                 static_folder='static')
     app.config.from_object(config_class)
@@ -29,7 +40,9 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     cors.init_app(app)
-    # admin.init_app(app)
+    admin.init_app(app)
+    ckeditor.init_app(app)
+    login.init_app(app)
     # from app.errors import bp as errors_bp
     # app.register_blueprint(errors_bp)
 

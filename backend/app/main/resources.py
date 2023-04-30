@@ -1,5 +1,5 @@
 import datetime as dt
-from flask import jsonify
+from flask import jsonify, url_for
 from flask_restful import Resource, reqparse
 from app.models import Map
 
@@ -13,5 +13,7 @@ class MapResource(Resource):
         args = self.parser.parse_args()
 
         maps = Map.query
+        response = jsonify(maps.all())
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
 
-        return jsonify(maps.all())
