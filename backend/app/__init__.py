@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 from logging.handlers import RotatingFileHandler
 import os
@@ -16,7 +17,6 @@ db = SQLAlchemy()
 migrate = Migrate()
 json = FlaskJSON()
 api = Api()
-cors = CORS(allow_headers='*')
 ckeditor = CKEditor()
 
 class MyAdminIndexView(AdminIndexView):
@@ -39,10 +39,10 @@ def create_app(config_class=Config):
     # app.debug = True
     db.init_app(app)
     migrate.init_app(app, db)
-    cors.init_app(app)
     admin.init_app(app)
     ckeditor.init_app(app)
     login.init_app(app)
+    CORS(app, allow_headers='*')
     # from app.errors import bp as errors_bp
     # app.register_blueprint(errors_bp)
 

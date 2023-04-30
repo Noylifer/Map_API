@@ -1,12 +1,16 @@
+import app
 from app.main import api
 from app.main.resources import MapResource
 from app.main import bp
 from app.models import Admin, Map
 from flask_login import login_user, logout_user, current_user
-from flask import url_for, send_from_directory, send_file, redirect, request, render_template, jsonify
+from flask import url_for, send_from_directory, send_file, redirect, request, render_template, jsonify, current_app, after_this_request
 from os import path
 import os
-from flask_cors import cross_origin
+from flask_cors import cross_origin, CORS
+
+CORS(bp)
+
 
 @bp.route('/')
 def main():
@@ -15,10 +19,17 @@ def main():
 @bp.route('/map', methods=["GET"])
 @cross_origin()
 def api():
+    @after_this_request
+    def add_header(response):
+        response.headers.add("X-Frame-Options", "*")
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+
     maps = Map.query
     response = jsonify(maps.all())
-    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
+
+
 
 @bp.route('/static/<path>', methods=['GET'])
 def send_report(path):
